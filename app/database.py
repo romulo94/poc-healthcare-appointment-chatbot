@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 def setup_database():
     """Setup database with sample data"""
-    conn = sqlite3.connect(":memory:")
+    conn = sqlite3.connect(":memory:", check_same_thread=False)
     cursor = conn.cursor()
 
     cursor.execute(

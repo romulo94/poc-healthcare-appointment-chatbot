@@ -62,11 +62,9 @@ class GeneralResponse(BaseModel):
     message: str  # Natural response to user
 
 
-class ChatbotState(TypedDict):
-    """Simple state for healthcare chatbot"""
+class AgentState(TypedDict):
+    """State for ReAct agent"""
 
     messages: Annotated[list[BaseMessage], add_messages]
     user_verified: bool
     user_data: dict
-    available_appointments: list[dict]
-    intent: str

@@ -1,57 +1,38 @@
-"""Graph construction and workflow definition"""
+"""Graph construction for ReAct agent"""
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import InMemorySaver
-from graph.models import ChatbotState
-from graph.nodes import *
-from graph.routing import *
+from langgraph.prebuilt import ToolNode
+from graph.models import AgentState
+from graph.nodes import agent_node, should_continue
+from app.tools import verify_patient, get_appointments, update_appointment_status
 
 
 def create_healthcare_chatbot():
-    """Create the healthcare chatbot following the diagram"""
+    """Create ReAct agent for healthcare appointments"""
 
-    workflow = StateGraph(ChatbotState)
+    workflow = StateGraph(AgentState)
+    
+    # Create ToolNode with all tools
+    tools = [verify_patient, get_appointments, update_appointment_status]
+    tool_node = ToolNode(tools)
 
-    # Add all nodes
-    workflow.add_node("introduction", introduction_node)
-    workflow.add_node("auth", auth_node)
-    workflow.add_node("chatbot", chatbot_node)
-    workflow.add_node("list", list_node)
-    workflow.add_node("confirm", confirm_node)
-    workflow.add_node("cancel", cancel_node)
+    # Add nodes
+    workflow.add_node("agent", agent_node)
+    workflow.add_node("tools", tool_node)
 
-    # MODIFICATION: Smart entry with auth bypass
-    # Instead of: workflow.add_edge(START, "introduction")
-    # Use conditional routing for returning authenticated users
+    # Add edges - ReAct pattern
+    workflow.add_edge(START, "agent")
     workflow.add_conditional_edges(
-        START,
-        entry_point_routing,  # Use new routing function
-        {"chatbot": "chatbot", "introduction": "introduction"},
+        "agent",
+        should_continue,
+        {
+            "continue": "tools",
+            "end": END,
+        }
     )
+    workflow.add_edge("tools", "agent")  # Always return to agent after tools
 
-    # Following the diagram exactly:
-    # Introduction -> Auth (conditional: if data collected)
-    workflow.add_conditional_edges(
-        "introduction", route_from_introduction, {"auth": "auth", END: END}
-    )
-
-    # Auth -> Chatbot OR End (conditional: if verified)
-    workflow.add_conditional_edges(
-        "auth", route_from_auth, {"chatbot": "chatbot", END: END}
-    )
-
-    # Chatbot -> List/Confirm/Cancel/End (conditional: based on intent)
-    workflow.add_conditional_edges(
-        "chatbot",
-        route_from_chatbot,
-        {"list": "list", "confirm": "confirm", "cancel": "cancel", END: END},
-    )
-
-    # All feature nodes -> End (simple edges)
-    workflow.add_edge("list", END)
-    workflow.add_edge("confirm", END)
-    workflow.add_edge("cancel", END)
-
-    # Compile with memory for thread persistence
+    # Compile with memory
     memory = InMemorySaver()
     return workflow.compile(checkpointer=memory)
