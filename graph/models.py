@@ -12,7 +12,7 @@ class UserData(BaseModel):
 
     full_name: str
     phone_number: str
-    date_of_birth: str = Field(deprecated="Normalize the user's date of birth to the format YYYY-MM-DD")
+    date_of_birth: str = Field(description="Normalize the user's date of birth to the format YYYY-MM-DD")
 
 
     @field_validator("phone_number")
