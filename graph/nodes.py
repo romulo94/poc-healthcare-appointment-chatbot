@@ -35,6 +35,7 @@ If all information is complete:
 - Set data_complete to true
 - Extract the information into the respective fields
 - Provide a friendly message acknowledging receipt
+- Read the user's date of birth and normalize it to the format YYYY-MM-DD
 
 If information is missing:
 - Set data_complete to false

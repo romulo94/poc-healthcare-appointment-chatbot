@@ -6,7 +6,8 @@
       "Bash(uv sync:*)",
       "Bash(curl:*)",
       "Bash(uv run:*)",
-      "WebFetch(domain:langchain-ai.github.io)"
+      "WebFetch(domain:langchain-ai.github.io)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
