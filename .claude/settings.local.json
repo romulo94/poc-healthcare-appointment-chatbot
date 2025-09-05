@@ -5,7 +5,8 @@
       "Bash(git ls-tree:*)",
       "Bash(uv sync:*)",
       "Bash(curl:*)",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "WebFetch(domain:langchain-ai.github.io)"
     ],
     "deny": [],
     "ask": []

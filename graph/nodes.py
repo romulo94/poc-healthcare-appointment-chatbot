@@ -26,7 +26,7 @@ def introduction_node(state: ChatbotState) -> Dict[str, Any]:
 
     system_prompt = """You are a friendly healthcare appointment assistant. Your role is to:
 1. Greet users warmly and professionally
-2. Collect their personal information: full name, phone number, and date of birth (YYYY-MM-DD format)
+2. Collect their personal information: full name, phone number, and date of birth
 3. Be conversational and helpful
 
 Analyze the conversation and determine if the user has provided all required information (full_name, phone_number, date_of_birth).
